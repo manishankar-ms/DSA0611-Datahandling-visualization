@@ -1,0 +1,126 @@
+
+
+import pandas as pd
+
+import matplotlib.pyplot as plt
+
+import seaborn as sns
+
+import folium
+
+
+
+# Load dataset
+
+df = pd.read_csv('road_accidents.csv')
+
+
+
+# Data cleaning
+
+df = df.dropna()
+
+df['date'] = pd.to_datetime(df['date'])
+
+df['year'] = df['date'].dt.year
+
+df['hour'] = df['date'].dt.hour
+
+
+
+# Number of accidents per year
+
+plt.figure(figsize=(10, 6))
+
+sns.countplot(x='year', data=df, palette='viridis')
+
+plt.title('Number of Accidents per Year')
+
+plt.xlabel('Year')
+
+plt.ylabel('Number of Accidents')
+
+plt.xticks(rotation=45)
+
+plt.show()
+
+
+
+# Accidents by severity
+
+plt.figure(figsize=(10, 6))
+
+sns.countplot(x='severity', data=df, palette='coolwarm')
+
+plt.title('Accidents by Severity')
+
+plt.xlabel('Severity')
+
+plt.ylabel('Number of Accidents')
+
+plt.show()
+
+
+
+# Accidents by weather conditions
+
+plt.figure(figsize=(12, 6))
+
+sns.countplot(y='weather_conditions', data=df, palette='magma')
+
+plt.title('Accidents by Weather Conditions')
+
+plt.xlabel('Number of Accidents')
+
+plt.ylabel('Weather Conditions')
+
+plt.show()
+
+
+
+# Number of accidents by hour of the day
+
+plt.figure(figsize=(12, 6))
+
+sns.countplot(x='hour', data=df, palette='inferno')
+
+plt.title('Number of Accidents by Hour of the Day')
+
+plt.xlabel('Hour of the Day')
+
+plt.ylabel('Number of Accidents')
+
+plt.show()
+
+
+
+# Geographical analysis (if latitude and longitude are available)
+
+if 'latitude' in df.columns and 'longitude' in df.columns:
+
+    map_center = [df['latitude'].mean(), df['longitude'].mean()]
+
+    accident_map = folium.Map(location=map_center, zoom_start=10)
+
+    for index, row in df.iterrows():
+
+        folium.Marker([row['latitude'], row['longitude']],
+
+                      popup=f"Date: {row['date']}<br>Severity: {row['severity']}").add_to(accident_map)
+
+    accident_map.save('accident_map.html')
+
+
+
+# Correlation analysis
+
+corr_matrix = df.corr()
+
+plt.figure(figsize=(10, 8))
+
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+
+plt.title('Correlation Matrix')
+
+plt.show()
+
